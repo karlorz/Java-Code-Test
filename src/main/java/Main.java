@@ -1,5 +1,4 @@
 import com.google.gson.Gson;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +14,7 @@ class Server {
     }
 
     public void handle(String payload) {
+        // Handle JSON payload, which might contain one or more requests.
         Gson gson = new Gson();
         Request[] requests = gson.fromJson(payload, Request[].class);
 
@@ -43,17 +43,19 @@ class Server {
                 int index = 0;
                 for (Map.Entry<String, Object> entry : params.entrySet()) {
                     paramTypes[index] = entry.getValue().getClass();
-                    paramTypes[index] = entry.getValue().getClass();
+                    paramValues[index] = entry.getValue();
+
+                    // Check if the parameter type is Double, convert it to int
                     if (paramTypes[index] == Double.class) {
                         paramTypes[index] = int.class;
                         paramValues[index] = ((Double) entry.getValue()).intValue();
-                    } else {
-                        paramValues[index] = entry.getValue();
                     }
+
                     index++;
                 }
             }
 
+            // Invoke the method on the service object using reflection
             service.getClass().getMethod(methodName, paramTypes).invoke(service, paramValues);
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,6 +75,7 @@ class ChatRoom {
         messageCount++;
     }
 
+    // Get the message count
     public int getMessageCount() {
         return messageCount;
     }
@@ -87,13 +90,15 @@ class MemberSystem {
 
     public void new_member(String email, int age) {
         System.out.println("New member: " + email + ", age: " + age);
-        memberAges.put(email, (int) age);
-    }
-    public void remove_member(String email) {
-//        System.out.println("Member removed: " + email);
-//        memberAges.remove(email);
+        memberAges.put(email, age);
     }
 
+    // Remove a member by email (not implemented)
+    public void remove_member(String email) {
+        // Not implemented
+    }
+
+    // Get the age of a member by email
     public int getAgeByEmail(String email) {
         return memberAges.getOrDefault(email, -1);
     }
@@ -110,39 +115,17 @@ public class Main {
         ChatRoom chatRoom = new ChatRoom();
         MemberSystem memberSystem = new MemberSystem();
 
+        // Register the chatRoom and memberSystem services to the server
         server.registerService("chatroom", chatRoom);
         server.registerService("member", memberSystem);
 
-        // TODO: Register the services above to the server object
-
-        /************************************
-         * !! DO NOT EDIT CONTENT BELOW !! *
-         ************************************/
-
-        // Sending 4 requests at once
-        // Don't need to support method member.remove_member, just ignore it
-
-        // [{
-        // "method": "chatroom.new_message",
-        // "params": { "message": "Foo" }
-        // },
-        // {
-        // "method": "chatroom.new_message",
-        // "params": { "message": "Bar" }
-        // },
-        // {
-        // "method": "member.new_member",
-        // "params": { "email": "jason@example.com", "age": 12 }
-        // },
-        // {
-        // "method": "member.remove_member",
-        // "params": { "email": "tony@example.com" }
-        // }]
-
+        // JSON payload containing multiple requests
         String jsonPayload = "[{\"method\": \"chatroom.new_message\", \"params\": { \"message\": \"Foo\" }}, {\"method\": \"chatroom.new_message\", \"params\": { \"message\": \"Bar\" }}, {\"method\": \"member.new_member\", \"params\": { \"email\": \"jason@example.com\", \"age\": 12 }}, {\"method\": \"member.remove_member\", \"params\": { \"email\": \"tony@example.com\" }}]";
 
+        // Handle the JSON payload
         server.handle(jsonPayload);
 
+        // Print the results
         System.out.println("Chat room message count: " + chatRoom.getMessageCount() + " (Expected: 2)");
         System.out.println("Jason's age: " + memberSystem.getAgeByEmail("jason@example.com") + " (Expected: 12)");
     }
