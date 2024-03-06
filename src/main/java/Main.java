@@ -119,6 +119,30 @@ public class Main {
         server.registerService("chatroom", chatRoom);
         server.registerService("member", memberSystem);
 
+        /************************************
+         * !! DO NOT EDIT CONTENT BELOW !! *
+         ************************************/
+
+        // Sending 4 requests at once
+        // Don't need to support method member.remove_member, just ignore it
+
+        // [{
+        // "method": "chatroom.new_message",
+        // "params": { "message": "Foo" }
+        // },
+        // {
+        // "method": "chatroom.new_message",
+        // "params": { "message": "Bar" }
+        // },
+        // {
+        // "method": "member.new_member",
+        // "params": { "email": "jason@example.com", "age": 12 }
+        // },
+        // {
+        // "method": "member.remove_member",
+        // "params": { "email": "tony@example.com" }
+        // }]
+        
         // JSON payload containing multiple requests
         String jsonPayload = "[{\"method\": \"chatroom.new_message\", \"params\": { \"message\": \"Foo\" }}, {\"method\": \"chatroom.new_message\", \"params\": { \"message\": \"Bar\" }}, {\"method\": \"member.new_member\", \"params\": { \"email\": \"jason@example.com\", \"age\": 12 }}, {\"method\": \"member.remove_member\", \"params\": { \"email\": \"tony@example.com\" }}]";
 
