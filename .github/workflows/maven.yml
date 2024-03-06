@@ -11,6 +11,11 @@ on:
     pull_request: null
     workflow_dispatch: null
 
+permissions:
+    contents: read
+    actions: read
+    checks: write
+    
 jobs:
   build_test:
     runs-on: ubuntu-latest
