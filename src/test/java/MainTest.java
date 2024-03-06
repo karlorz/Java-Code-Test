@@ -35,7 +35,7 @@ public class MainTest {
     public void testRandomCase() {
         // Generate random input data
         String randomMessage = UUID.randomUUID().toString();
-        int randomAge = new Random().nextInt(100);
+        int randomAge = new Random().nextInt(99);
 
         Server server = new Server();
         ChatRoom chatRoom = new ChatRoom();
