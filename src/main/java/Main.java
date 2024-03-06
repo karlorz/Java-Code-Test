@@ -1,9 +1,11 @@
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 import java.util.HashMap;
 import java.util.Map;
 
 class Server {
-    private Map<String, Object> services;
+    Map<String, Object> services;
 
     public Server() {
         services = new HashMap<>();
@@ -16,7 +18,18 @@ class Server {
     public void handle(String payload) {
         // Handle JSON payload, which might contain one or more requests.
         Gson gson = new Gson();
-        Request[] requests = gson.fromJson(payload, Request[].class);
+        Request[] requests;
+
+        try {
+            requests = gson.fromJson(payload, Request[].class);
+        } catch (JsonSyntaxException e) {
+            System.out.println("JSON parsing error: " + e.getMessage());
+            return;
+        } catch (JsonParseException e) {
+            // Handle JSON parse error
+            System.out.println("Failed to parse JSON: " + e.getMessage());
+            return;
+        }
 
         for (Request request : requests) {
             String[] methodParts = request.method.split("\\.");
@@ -142,7 +155,7 @@ public class Main {
         // "method": "member.remove_member",
         // "params": { "email": "tony@example.com" }
         // }]
-        
+
         // JSON payload containing multiple requests
         String jsonPayload = "[{\"method\": \"chatroom.new_message\", \"params\": { \"message\": \"Foo\" }}, {\"method\": \"chatroom.new_message\", \"params\": { \"message\": \"Bar\" }}, {\"method\": \"member.new_member\", \"params\": { \"email\": \"jason@example.com\", \"age\": 12 }}, {\"method\": \"member.remove_member\", \"params\": { \"email\": \"tony@example.com\" }}]";
 
